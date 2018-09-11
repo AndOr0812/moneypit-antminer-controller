@@ -16,17 +16,15 @@ $app->get('/antminer', function (Request $request, Response $response, array $ar
 
     $antminer = new Antminer($r['ip'],$r['pw']);
 
-  
+
 
     $details = array();
-    $details['ip'] = $antminer->getIp();
 
+    $details['ip'] = $antminer->getIp();
     $details['state'] = $antminer->getState();
-    /*
-    $details['summary'] = $antminer::summary;
-    $details['pools'] = $antminer::pools;
-    $details['stats'] = $antminer::stats;
-    */
+    $details['summary'] = $antminer->getSummary();
+    $details['pools'] = $antminer->getPools();
+    $details['stats'] = $antminer->getStats();
 
     return $response->withJson($details);
 });

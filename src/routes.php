@@ -14,12 +14,11 @@ $app->get('/antminer', function (Request $request, Response $response, array $ar
 
     $r = $request->getQueryParams();
 
-    $antminer = new Antminer($r['ip'],$r['pw']);
-
-
+    $antminer = new Antminer($r['ip'],$r['pw'], strtoupper($r['type']));
 
     $details = array();
 
+    $details['timestamp'] = date('c');
     $details['ip'] = $antminer->getIp();
     $details['state'] = $antminer->getState();
     $details['summary'] = $antminer->getSummary();

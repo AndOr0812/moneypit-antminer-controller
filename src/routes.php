@@ -3,12 +3,30 @@
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-// Routes
+// Swagger docs
+$app->get('/', function (Request $request, Response $response, array $args) {
+    $swaggerDocs = array();
+    return $response->withJson($swaggerDocs);
+});
 
-$app->get('/[{name}]', function (Request $request, Response $response, array $args) {
-    // Sample log message
-    $this->logger->info("Slim-Skeleton '/' route");
+// GET antminer details
+$app->get('/antminer', function (Request $request, Response $response, array $args) {
 
-    // Render index view
-    return $this->renderer->render($response, 'index.phtml', $args);
+    $r = $request->getQueryParams();
+
+    $antminer = new Antminer($r['ip'],$r['pw']);
+
+  
+
+    $details = array();
+    $details['ip'] = $antminer->getIp();
+
+    $details['state'] = $antminer->getState();
+    /*
+    $details['summary'] = $antminer::summary;
+    $details['pools'] = $antminer::pools;
+    $details['stats'] = $antminer::stats;
+    */
+
+    return $response->withJson($details);
 });

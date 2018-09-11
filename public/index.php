@@ -26,5 +26,8 @@ require __DIR__ . '/../src/middleware.php';
 // Register routes
 require __DIR__ . '/../src/routes.php';
 
+// Load Antminer class
+require __DIR__ . '/../src/antminer.php';
+
 // Run app
 $app->run();

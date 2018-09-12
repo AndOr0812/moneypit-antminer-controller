@@ -1,0 +1,59 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "moneypit-antminer-controller",
+    "version": ".1",
+    "title": "moneypit-antminer-controller"
+  },
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/antminer": {
+      "get": {
+        "tags": [
+          "antminer"
+        ],
+        "summary": "Fetch antminer state and operating details",
+        "operationId": "antminer",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "ip",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ip address of antminer"
+          },
+          {
+            "in": "query",
+            "name": "pw",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "root pw of antminer (to allow ssh access)"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "type of antminer (supports S9, S9i, A3, D3, L3)"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    }
+  }
+}

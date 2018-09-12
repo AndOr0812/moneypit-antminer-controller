@@ -7,12 +7,24 @@ class Antminer {
   public static $type;
 
   public static $state;
+
+  public static $config;
+  public static $network;
+
   public static $summary;
   public static $pools;
   public static $stats;
 
   function getIp() {
     return self::$ip;
+  }
+
+  function getPw() {
+    return self::$pw;
+  }
+
+  function getType() {
+    return self::$type;
   }
 
   function getState() {
@@ -31,79 +43,39 @@ class Antminer {
     return self::$stats;
   }
 
+  function getConfig() {
+    return self::$config;
+  }
+
+  function getNetwork() {
+    return self::$network;
+  }
+
+  // Fetches state of miner
+  // ONLINE = miner should be in a running state
+  // OFFLINE = miner is not accessible
+  // IDLE = miner has been "shutdown" so that it will not connect to mining pool and will consume minimal power
   function fetchAntminerState() {
-
-    function stateBmminer($ip, $pw) {
-
-      $command = 'test -f /config; echo $?';
-      $shell_exec = "sshpass -p '".$pw."' ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@".$ip." '".$command."'";
-
-      $connect_check = shell_exec($shell_exec);
-
-      if ($connect_check == 1)  {
-
-        $command = 'test -f /config/bmminer.conf_shutdown; echo $?';
-        $miner_conf_check = shell_exec("sshpass -p '".$pw."' ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@".$ip." '".$command."'");
-
-        if ($miner_conf_check == 1) {
-          return "ONLINE";
-        } else {
-          return "IDLE";
-        }
-
-      } else {
-
-        return "OFFLINE";
-
-      }
-
-    }
-
-    function stateCgminer($ip, $pw) {
-
-      $command = 'test -f /config; echo $?';
-      $shell_exec = "sshpass -p '".$pw."' ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@".$ip." '".$command."'";
-
-      $connect_check = shell_exec($shell_exec);
-
-      if ($connect_check == 1)  {
-
-        $command = 'test -f /config/cgmminer.conf_shutdown; echo $?';
-        $miner_conf_check = shell_exec("sshpass -p '".$pw."' ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@".$ip." '".$command."'");
-
-        if ($miner_conf_check == 1) {
-          return "ONLINE";
-        } else {
-          return "IDLE";
-        }
-
-      } else {
-
-        return "OFFLINE";
-
-      }
-
-    }
 
     switch (self::$type) {
       case 'S9' :
-        self::$state = stateBmminer(self::$ip, self::$pw);
+        self::$state = self::stateBmminer(self::$ip, self::$pw);
       break;
 
       case 'S9i' :
-        self::$state = stateBmminer(self::$ip, self::$pw);
+        self::$state = self::stateBmminer(self::$ip, self::$pw);
       break;
 
       case 'D3' :
-        self::$state = stateCgminer(self::$ip, self::$pw);
+        self::$state = self::stateCgminer(self::$ip, self::$pw);
       break;
 
       case 'A3' :
-        self::$state = stateCgminer(self::$ip, self::$pw);
+        self::$state = self::stateCgminer(self::$ip, self::$pw);
       break;
 
       case 'L3' :
-        self::$state = stateCgminer(self::$ip, self::$pw);
+        self::$state = self::stateCgminer(self::$ip, self::$pw);
       break;
 
       default:
@@ -113,9 +85,202 @@ class Antminer {
 
   }
 
-  function fetchAntminerInfo() {
+  // Fetches Antminer /config files (bmminer.conf -or- cgminer.conf AND network.conf)
+  function fetchAntminerConfig() {
 
+    switch (self::$type) {
+      case 'S9' :
+        self::$state = self::configBmminer(self::$ip, self::$pw);
+      break;
 
+      case 'S9i' :
+        self::$state = self::configBmminer(self::$ip, self::$pw);
+      break;
+
+      case 'D3' :
+        self::$state = self::configCgminer(self::$ip, self::$pw);
+      break;
+
+      case 'A3' :
+        self::$state = self::configCgminer(self::$ip, self::$pw);
+      break;
+
+      case 'L3' :
+        self::$state = self::configCgminer(self::$ip, self::$pw);
+      break;
+
+      default:
+        self::$state = null;
+      break;
+    }
+
+  }
+
+  // Powers miner off - requires miner to be fully powered off / on to bring back online
+  function poweroffAntminer($ip, $pw, $type) {
+    $command = "/sbin/poweroff";
+    return self::sshExec($ip, $pw, $command);
+  }
+
+  // Updates miner config / software info to move from ONLINE to IDLE state
+  function shutdownAntminer($ip, $pw, $type) {
+    if ($type == "S9" || $type == "S9i") {
+      return self::shutdownBmminer($ip, $pw);
+    }
+
+    if ($type == "D3" || $type == "A3" || $type == "L3") {
+      return self::shutdownCgminer($ip, $pw);
+    }
+  }
+
+  // Updates miner config / software info to move from IDLE to ONLINE state
+  function startupAntminer($ip, $pw, $type) {
+    if ($type == "S9" || $type == "S9i") {
+      return self::startupBmminer($ip, $pw);
+    }
+
+    if ($type == "D3" || $type == "A3" || $type == "L3") {
+      return self::startupCgminer($ip, $pw);
+    }
+  }
+
+  // Reboots miner
+  function rebootMiner($ip, $pw, $type) {
+    $command = "/sbin/reboot";
+    return self::sshExec($ip, $pw, $command);
+  }
+
+  // Used to fetch state for Antminers that use Bmminer (S9, etc)
+  private function stateBmminer($ip, $pw) {
+
+    $command = 'test -f /config; echo $?';
+    $connect_check = self::sshExec($ip, $pw, $command);
+
+    if ($connect_check == 1)  {
+
+      $command = 'test -f /config/bmminer.conf_shutdown; echo $?';
+      $miner_conf_check = self::sshExec($ip, $pw, $command);
+
+      if ($miner_conf_check == 1) {
+        return "ONLINE";
+      } else {
+        return "IDLE";
+      }
+
+    } else {
+
+      return "OFFLINE";
+
+    }
+  }
+
+ // Used to fetch state for Antminers that use Bmminer (S9, etc)
+  private function configBmminer($ip, $pw) {
+    $command = "more /config/bmminer.conf";
+    $miner_config = json_decode(self::sshExec($ip, $pw, $command), TRUE);
+
+    $command = "more /config/network.conf";
+    $network_config = self::sshExec($ip, $pw, $command);
+
+    self::$config = $miner_config;
+    self::$network = $network_config;
+  }
+
+  // Used to shutdown (change from ONLINE to IDLE) for Antminers that use Bmminer (S9, etc)
+  private function shutdownBmminer($ip, $pw) {
+    $commands = array();
+    $commands[] = "cp /config/bmminer.conf /config/bmminer.conf_shutdown";
+    $commands[] = "mv /sbin/monitorcg /sbin/monitorcg_shutdown";
+    $commands[] = "mv /usr/bin/monitor-recobtn /usr/bin/monitor-recobtn_shutdown";
+    $commands[] = "mv /usr/bin/monitor-ipsig /usr/bin/monitor-ipsig_shutdown";
+    $commands[] = "mv /usr/bin/bmminer /usr/bin/bmminer_shutdown";
+    $commands[] = "/sbin/reboot";
+
+    foreach ($commands as $k=>$command) {
+      self::sshExec($ip, $pw, $command);
+    }
+  }
+
+  // Used to startup (change from ONLINE to IDLE) for Antminers that use Bmminer (S9, etc)
+  private function startupBmminer($ip, $pw) {
+    $commands = array();
+    $commands[] = "rm /config/bmminer.conf_shutdown";
+    $commands[] = "mv /sbin/monitorcg_shutdown /sbin/monitorcg";
+    $commands[] = "mv /usr/bin/monitor-recobtn_shutdown /usr/bin/monitor-recobtn";
+    $commands[] = "mv /usr/bin/monitor-ipsig_shutdown /usr/bin/monitor-ipsig";
+    $commands[] = "mv /usr/bin/bmminer_shutdown /usr/bin/bmminer";
+    $commands[] = "/sbin/reboot";
+
+    foreach ($commands as $k=>$command) {
+      self::sshExec($ip, $pw, $command);
+    }
+  }
+
+  // Used to fetch state for Antminers that use Cgminer (L3, D3, A3, etc)
+  private function stateCgminer($ip, $pw) {
+    $command = 'test -f /config; echo $?';
+    $connect_check = self::sshExec($ip, $pw, $command);
+
+    if ($connect_check == 1)  {
+
+      $command = 'test -f /config/cgmminer.conf_shutdown; echo $?';
+      $miner_conf_check = self::sshExec($ip, $pw, $command);
+
+      if ($miner_conf_check == 1) {
+        return "ONLINE";
+      } else {
+        return "IDLE";
+      }
+
+    } else {
+      return "OFFLINE";
+    }
+  }
+
+  // Used to fetch state for Antminers that use Cgminer (L3, D3, A3, etc)
+   private function configCgminer($ip, $pw) {
+     $command = "more /config/cgminer.conf";
+     $miner_config = json_decode(self::sshExec($ip, $pw, $command), TRUE);
+
+     $command = "more /config/network.conf";
+     $network_config = self::sshExec($ip, $pw, $command);
+
+     self::$config = $miner_config;
+     self::$network = $network_config;
+   }
+
+  // Used to shutdown (change from ONLINE to IDLE) for Antminers that use Cgminer (L3, D3, A3, etc)
+  private function shutdownCgminer($ip, $pw) {
+    $command = "more /config/cgminer.conf";
+    $miner_config = json_decode(self::sshExec($ip, $pw, $command), TRUE);
+
+    $miner_config_no_pools = $miner_config;
+    $miner_config_no_pools['pools'] = [];
+
+    $commands = [];
+    $commands[] = "mv /config/cgminer.conf /config/cgminer.conf_shutdown";
+    $commands[] = 'echo "'.str_replace('"','\"',json_encode($miner_config_no_pools)).'" > /config/cgminer.conf';
+    $commands[] = "/sbin/reboot";
+
+    foreach ($commands as $k=>$command) {
+      self::sshExec($ip, $pw, $command);
+    }
+  }
+
+  // Used to startup (change from IDLE to ONLINE) for Antminers that use Cgminer (L3, D3, A3, etc)
+  private function startupCgminer($ip, $pw) {
+    $commands = [];
+    $commands[] = "rm /config/cgminer.conf";
+    $commands[] = "mv /config/cgminer.conf_shutdown /config/cgminer.conf";
+    $commands[] = "/sbin/reboot";
+
+    foreach ($commands as $k=>$command) {
+      self::sshExec($ip, $pw, $command);
+    }
+  }
+
+  // Used to fetch info from Antminer
+  private function fetchAntminerInfo() {
 
     $port = '4028';
 
@@ -636,6 +801,12 @@ class Antminer {
     return;
   }
 
+  // Helper function used to interrogate miner via SSH (used my various functions in this class)
+  private function sshExec($ip, $pw, $command) {
+    $shell_exec = "sshpass -p '".$pw."' ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@".$ip." '".$command."'";
+    return shell_exec($shell_exec);
+  }
+
   function __construct($ip, $pw, $type) {
 
     self::$ip   = $ip;
@@ -645,10 +816,9 @@ class Antminer {
     self::fetchAntminerState();
 
     if (self::$state == "ONLINE") {
+      self::fetchAntminerConfig();
       self::fetchAntminerInfo();
     }
-
-
 
   }
 

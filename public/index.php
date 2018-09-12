@@ -30,4 +30,5 @@ require __DIR__ . '/../src/routes.php';
 require __DIR__ . '/../src/antminer.php';
 
 // Run app
+
 $app->run();

@@ -17,28 +17,20 @@ $app->get('/antminer', function (Request $request, Response $response, array $ar
 
     $r = $request->getQueryParams();
 
-    $l = array();
-    $l['timestamp'] = date('c');
-    $l['event'] = 'FETCH_ANTMINER_INFO';
-    $l['ip'] = $r['ip'];
-    $l['pw'] = $r['pw'];
-    $l['type'] = $r['type'];
-
-    $this->logger->info(json_encode($l));
+    $this->logger->info(json_encode(array('timestamp' => date('c'), 'event' => 'FETCH_ANTMINER_INFO', 'ip' => $r['ip'], 'pw' => $r['pw'], 'type' => $r['type'])));
 
     $antminer = new Antminer($r['ip'],$r['pw'], strtoupper($r['type']));
 
-    $details = array();
-
-    $details['timestamp'] = date('c');
-    $details['ip'] = $antminer->getIp();
-    $details['type'] = $antminer->getType();
-    $details['config'] = $antminer->getConfig();
-    $details['network'] = $antminer->getNetwork();
-    $details['state'] = $antminer->getState();
-    $details['summary'] = $antminer->getSummary();
-    $details['pools'] = $antminer->getPools();
-    $details['stats'] = $antminer->getStats();
-
+    $details = array(
+      'timestamp'   => date('c'),
+      'ip'          => $antminer->getIp(),
+      'type'        => $antminer->getType(),
+      'state'       => $antminer->getState(),
+      'network'     => $antminer->getNetwork(),
+      'config'      => $antminer->getConfig(),
+      'summary'     => $antminer->getSummary(),
+      'pools'       => $antminer->getPools(),
+      'stats'       => $antminer->getStats()
+    );
     return $response->withJson($details);
 });

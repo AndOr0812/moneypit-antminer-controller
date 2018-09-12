@@ -90,27 +90,27 @@ class Antminer {
 
     switch (self::$type) {
       case 'S9' :
-        self::$state = self::configBmminer(self::$ip, self::$pw);
+        self::configBmminer(self::$ip, self::$pw);
       break;
 
       case 'S9i' :
-        self::$state = self::configBmminer(self::$ip, self::$pw);
+        self::configBmminer(self::$ip, self::$pw);
       break;
 
       case 'D3' :
-        self::$state = self::configCgminer(self::$ip, self::$pw);
+        self::configCgminer(self::$ip, self::$pw);
       break;
 
       case 'A3' :
-        self::$state = self::configCgminer(self::$ip, self::$pw);
+        self::configCgminer(self::$ip, self::$pw);
       break;
 
       case 'L3' :
-        self::$state = self::configCgminer(self::$ip, self::$pw);
+        self::configCgminer(self::$ip, self::$pw);
       break;
 
       default:
-        self::$state = null;
+        
       break;
     }
 

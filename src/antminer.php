@@ -48,7 +48,7 @@ class Antminer {
   }
 
   function getNetwork() {
-    return ;
+    return self::$network;
   }
 
   // Fetches state of miner
@@ -138,6 +138,37 @@ class Antminer {
 
       case 'L3' :
         self::updateConfigCgminer($config);
+      break;
+
+      default:
+
+      break;
+    }
+
+  }
+
+  // Update Antminer /config files (bmminer.conf -or- cgminer.conf)
+  function updateAntminerNetwork($network) {
+
+    switch (self::$type) {
+      case 'S9' :
+        self::updateNetworkBmminer($network);
+      break;
+
+      case 'S9i' :
+        self::updateNetworkBmminer($network);
+      break;
+
+      case 'D3' :
+        self::updateNetworkCgminer($network);
+      break;
+
+      case 'A3' :
+        self::updateNetworkCgminer($network);
+      break;
+
+      case 'L3' :
+        self::updateNetworkCgminer($network);
       break;
 
       default:
@@ -246,6 +277,17 @@ class Antminer {
     self::sshExec($ip, $pw, $command);
 
   }
+  // used to update config for Antminers that use Bmminer (S9, etc)
+  private function updateNetworkBmminer($network_string) {
+
+    $ip = self::$ip;
+    $pw = self::$pw;
+    $type = self::$type;
+
+    $command = 'echo "'.str_replace('"','\"',$network_string).'" > /config/network.conf';
+    self::sshExec($ip, $pw, $command);
+
+  }
 
   // Used to shutdown (change from ONLINE to IDLE) for Antminers that use Bmminer (S9, etc)
   private function shutdownBmminer() {
@@ -333,6 +375,18 @@ class Antminer {
      $type = self::$type;
 
      $command = 'echo "'.str_replace('"','\"',$config_json_string).'" > /config/cgminer.conf';
+     self::sshExec($ip, $pw, $command);
+
+   }
+
+   // used to update config for Antminers that use Cgminer (L3, D3, A3, etc)
+   private function updateNetworkCgminer($network_string) {
+
+     $ip = self::$ip;
+     $pw = self::$pw;
+     $type = self::$type;
+
+     $command = 'echo "'.str_replace('"','\"',$network_string).'" > /config/network.conf';
      self::sshExec($ip, $pw, $command);
 
    }

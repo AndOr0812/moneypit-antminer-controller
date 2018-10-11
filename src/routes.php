@@ -177,8 +177,7 @@ $app->put('/antminer/config', function (Request $request, Response $response, ar
     } else {
 
       $antminer->updateAntminerConfig(json_encode($b));
-      $antminer->reboot();
-      return $response->withStatus(200)->withJson(array('status'=> 200, 'message' => 'Antminer config updated and miner rebooted'));
+      return $response->withStatus(200)->withJson(array('status'=> 200, 'message' => 'Antminer config updated (you must initiate a reboot for changes to take affect)'));
 
     }
 
@@ -202,6 +201,30 @@ $app->get('/antminer/network', function (Request $request, Response $response, a
     } else {
 
       return $response->withStatus(409)->withJson(array('status'=> 409, 'message' => 'Antminer must be in [ONLINE] -or- [IDLE] state to fetch network'));
+
+    }
+
+});
+
+// PUT antminer network setting
+// Replaces network setting
+$app->put('/antminer/network', function (Request $request, Response $response, array $args) {
+
+    $r = $request->getQueryParams();
+    $b = $request->getParsedBody();
+
+    $this->logger->info(json_encode(array('timestamp' => date('c'), 'event' => 'UPDATE_ANTMINER_NETWORK', 'ip' => $r['ip'], 'pw' => $r['pw'], 'type' => $r['type'], 'network'=>$b['network.conf'])));
+
+    $antminer = new Antminer($r['ip'],$r['pw'], strtoupper($r['type']));
+
+    if ($antminer->getState() !== 'ONLINE') {
+
+      return $response->withStatus(409)->withJson(array('status'=> 409, 'message' => 'Antminer must be in [ONLINE] state to update network'));
+
+    } else {
+
+      $antminer->updateAntminerNetwork(json_encode($b['network.conf']));
+      return $response->withStatus(200)->withJson(array('status'=> 200, 'message' => 'Antminer network updated (you must initiate a reboot for changes to take affect)'));
 
     }
 

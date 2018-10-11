@@ -59,11 +59,14 @@ $app->get('/antminer/state', function (Request $request, Response $response, arr
 // UPDATE antminer state
 // {"state": "ONLINE"} => will attempt to change state from IDLE to ONLINE
 // {"state": "IDLE"} => will attempt to change state from ONLINE to IDLE
+// {"state": "REBOOT"} => will attempt to reboot miner
 // NOTE - If state currently is OFFLINE, the miner must be restarted by power cycling the miner, and can't be done via the API
 $app->put('/antminer/state', function (Request $request, Response $response, array $args) {
 
     $r = $request->getQueryParams();
     $b = $request->getParsedBody();
+
+    $this->logger->info(json_encode(array('timestamp' => date('c'), 'event' => 'UPDATE_ANTMINER_STATE', 'ip' => $r['ip'], 'pw' => $r['pw'], 'type' => $r['type'], 'state'=>$b['state'])));
 
     $antminer = new Antminer($r['ip'],$r['pw'], strtoupper($r['type']));
 
@@ -94,6 +97,16 @@ $app->put('/antminer/state', function (Request $request, Response $response, arr
 
       return $response->withJson($responseMsg);
 
+    } elseif (strtoupper($b['state']) == "REBOOT") {
+
+      $antminer->reboot();
+
+      $responseMsg = [];
+      $responseMsg['status'] = "ok";
+      $responseMsg['message'] = "the miner is currently being rebooted";
+
+      return $response->withJson($responseMsg);
+
     } elseif (strtoupper($b['state']) == "IDLE") {
 
       $antminer->shutdown();
@@ -120,5 +133,76 @@ $app->put('/antminer/state', function (Request $request, Response $response, arr
       $responseMsg['message'] = "state change not valid [".$b['state']."]";
     }
 
+
+});
+
+// GET antminer config
+// NOTE: config is only shown if antminer is in ONLINE state
+$app->get('/antminer/config', function (Request $request, Response $response, array $args) {
+
+    $r = $request->getQueryParams();
+
+    $this->logger->info(json_encode(array('timestamp' => date('c'), 'event' => 'FETCH_ANTMINER_CONFIG', 'ip' => $r['ip'], 'pw' => $r['pw'], 'type' => $r['type'])));
+
+    $antminer = new Antminer($r['ip'],$r['pw'], strtoupper($r['type']));
+
+    if ($antminer->getState() !== 'ONLINE') {
+
+      return $response->withStatus(409)->withJson(array('status'=> 409, 'message' => 'Antminer must be in [ONLINE] state to fetch config'));
+
+    } else {
+
+      $config = $antminer->getConfig();
+      return $response->withStatus(200)->withJson($config);
+
+    }
+
+});
+
+// PUT antminer config
+// Replaces config
+$app->put('/antminer/config', function (Request $request, Response $response, array $args) {
+
+    $r = $request->getQueryParams();
+    $b = $request->getParsedBody();
+
+    $this->logger->info(json_encode(array('timestamp' => date('c'), 'event' => 'UPDATE_ANTMINER_CONFIG', 'ip' => $r['ip'], 'pw' => $r['pw'], 'type' => $r['type'], 'config'=>$b)));
+
+    $antminer = new Antminer($r['ip'],$r['pw'], strtoupper($r['type']));
+
+    if ($antminer->getState() !== 'ONLINE') {
+
+      return $response->withStatus(409)->withJson(array('status'=> 409, 'message' => 'Antminer must be in [ONLINE] state to update config'));
+
+    } else {
+
+      $antminer->updateAntminerConfig(json_encode($b));
+      $antminer->reboot();
+      return $response->withStatus(200)->withJson(array('status'=> 200, 'message' => 'Antminer config updated and miner rebooted'));
+
+    }
+
+});
+
+// GET antminer network setting
+// NOTE: network setting is only shown if antminer is in ONLINE or IDLE state
+$app->get('/antminer/network', function (Request $request, Response $response, array $args) {
+
+    $r = $request->getQueryParams();
+
+    $this->logger->info(json_encode(array('timestamp' => date('c'), 'event' => 'FETCH_ANTMINER_NETWORK', 'ip' => $r['ip'], 'pw' => $r['pw'], 'type' => $r['type'])));
+
+    $antminer = new Antminer($r['ip'],$r['pw'], strtoupper($r['type']));
+
+    if ($antminer->getState() !== 'OFFLINE') {
+
+      $network = $antminer->getNetwork();
+      return $response->withStatus(200)->withJson(array('network.conf' => $network));
+
+    } else {
+
+      return $response->withStatus(409)->withJson(array('status'=> 409, 'message' => 'Antminer must be in [ONLINE] -or- [IDLE] state to fetch network'));
+
+    }
 
 });

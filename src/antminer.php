@@ -48,7 +48,7 @@ class Antminer {
   }
 
   function getNetwork() {
-    return self::$network;
+    return ;
   }
 
   // Fetches state of miner
@@ -116,6 +116,37 @@ class Antminer {
 
   }
 
+  // Update Antminer /config files (bmminer.conf -or- cgminer.conf)
+  function updateAntminerConfig($config) {
+
+    switch (self::$type) {
+      case 'S9' :
+        self::updateConfigBmminer($config);
+      break;
+
+      case 'S9i' :
+        self::updateConfigBmminer($config);
+      break;
+
+      case 'D3' :
+        self::updateConfigCgminer($config);
+      break;
+
+      case 'A3' :
+        self::updateConfigCgminer($config);
+      break;
+
+      case 'L3' :
+        self::updateConfigCgminer($config);
+      break;
+
+      default:
+
+      break;
+    }
+
+  }
+
   // Powers miner off - requires miner to be fully powered off / on to bring back online
   function poweroff() {
     $ip = self::$ip;
@@ -173,25 +204,18 @@ class Antminer {
     $pw = self::$pw;
     $type = self::$type;
 
-    $command = 'test -f /config; echo $?';
-    $connect_check = self::sshExec($ip, $pw, $command);
+    if (self::minerDirectoryExists('/config'))  {
 
-    if ($connect_check == 1)  {
-
-      $command = 'test -f /config/bmminer.conf_shutdown; echo $?';
-      $miner_conf_check = self::sshExec($ip, $pw, $command);
-
-      if ($miner_conf_check == 1) {
+      if (self::minerFileExists('/config/bmminer.conf_shutdown')) {
         return "IDLE";
       } else {
         return "ONLINE";
       }
 
     } else {
-
       return "OFFLINE";
-
     }
+
   }
 
  // Used to fetch state for Antminers that use Bmminer (S9, etc)
@@ -209,6 +233,18 @@ class Antminer {
 
     self::$config = $miner_config;
     self::$network = $network_config;
+  }
+
+  // used to update config for Antminers that use Bmminer (S9, etc)
+  private function updateConfigBmminer($config_json_string) {
+
+    $ip = self::$ip;
+    $pw = self::$pw;
+    $type = self::$type;
+
+    $command = 'echo "'.str_replace('"','\"',$config_json_string).'" > /config/bmminer.conf';
+    self::sshExec($ip, $pw, $command);
+
   }
 
   // Used to shutdown (change from ONLINE to IDLE) for Antminers that use Bmminer (S9, etc)
@@ -258,15 +294,9 @@ class Antminer {
     $pw = self::$pw;
     $type = self::$type;
 
-    $command = 'test -f /config; echo $?';
-    $connect_check = self::sshExec($ip, $pw, $command);
+    if (self::minerDirectoryExists('/config'))  {
 
-    if ($connect_check == 1)  {
-
-      $command = 'test -f /config/cgmminer.conf_shutdown; echo $?';
-      $miner_conf_check = self::sshExec($ip, $pw, $command);
-
-      if ($miner_conf_check == 1) {
+      if (self::minerFileExists('/config/cgminer.conf_shutdown')) {
         return "IDLE";
       } else {
         return "ONLINE";
@@ -275,6 +305,7 @@ class Antminer {
     } else {
       return "OFFLINE";
     }
+
   }
 
   // Used to fetch state for Antminers that use Cgminer (L3, D3, A3, etc)
@@ -292,6 +323,18 @@ class Antminer {
 
      self::$config = $miner_config;
      self::$network = $network_config;
+   }
+
+   // used to update config for Antminers that use Cgminer (L3, D3, A3, etc)
+   private function updateConfigCgminer($config_json_string) {
+
+     $ip = self::$ip;
+     $pw = self::$pw;
+     $type = self::$type;
+
+     $command = 'echo "'.str_replace('"','\"',$config_json_string).'" > /config/cgminer.conf';
+     self::sshExec($ip, $pw, $command);
+
    }
 
   // Used to shutdown (change from ONLINE to IDLE) for Antminers that use Cgminer (L3, D3, A3, etc)
@@ -860,6 +903,42 @@ class Antminer {
   private function sshExec($ip, $pw, $command) {
     $shell_exec = "sshpass -p '".$pw."' ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@".$ip." '".$command."'";
     return shell_exec($shell_exec);
+  }
+
+  // Helper function used to see if file exists on miner
+  private function minerFileExists($filepath) {
+
+    $ip = self::$ip;
+    $pw = self::$pw;
+    $type = self::$type;
+
+    $command = "[ -f $filepath ] && echo '1' || echo '0'";
+    $response = self::sshExec($ip, $pw, $command);
+
+    if ($response == 1) {
+      return TRUE;
+    } else {
+      return FALSE;
+    }
+
+  }
+
+  // Helper function used to see if directory exists on miner
+  private function minerDirectoryExists($dirpath) {
+
+    $ip = self::$ip;
+    $pw = self::$pw;
+    $type = self::$type;
+
+    $command = "[ -d $dirpath ] && echo '1' || echo '0'";
+    $response = self::sshExec($ip, $pw, $command);
+
+    if ($response == 1) {
+      return TRUE;
+    } else {
+      return FALSE;
+    }
+
   }
 
   function __construct($ip, $pw, $type) {

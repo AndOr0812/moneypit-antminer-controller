@@ -1,16 +1,8 @@
 {
-    "name": "slim/slim-skeleton",
-    "description": "A Slim Framework skeleton application for rapid development",
-    "keywords": ["microframework", "rest", "router", "psr7"],
+    "name": "moneypit/moneypit-antminer-controller",
+    "description": "Provides REST APIs to monitor / maintain / deploy Antminers in moneypit crypto mine locations.",
     "homepage": "http://github.com/slimphp/Slim-Skeleton",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Josh Lockhart",
-            "email": "info@joshlockhart.com",
-            "homepage": "http://www.joshlockhart.com/"
-        }
-    ],
     "require": {
         "php": ">=5.5.0",
         "slim/slim": "^3.1",
@@ -29,7 +21,7 @@
         "process-timeout" : 0
     },
     "scripts": {
-        "start": "php -S localhost:8080 -t public",
+        "start": "php -S localhost:3000 -t public",
         "test": "phpunit"
     }
 

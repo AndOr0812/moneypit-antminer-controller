@@ -1,27 +1,63 @@
-# Slim Framework 3 Skeleton Application
+# moneypit-antminer-controller
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application. This application uses the latest Slim 3 with the PHP-View template renderer. It also uses the Monolog logger.
+Typically installed on a Raspberry Pi.
 
-This skeleton application was built for Composer. This makes setting up a new Slim Framework application quick and easy.
+Provides a set of REST APIs to monitor / maintain / deploy Antminers in moneypit crypto mines.
 
-## Install the Application
+## Dependencies
 
-Run this command from the directory in which you want to install your new Slim Framework application.
+> Recommend running `sudo apt-get update` on Raspberry Pi prior to install
 
-    php composer.phar create-project slim/slim-skeleton [my-app-name]
+- Git
+   `sudo apt-get install git`
 
-Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
+- PHP
+  `sudo apt-get install php7.0`
 
-* Point your virtual host document root to your new application's `public/` directory.
-* Ensure `logs/` is web writeable.
+## install
 
-To run the application in development, you can run these commands 
+- Clone repo
 
-	cd [my-app-name]
-	php composer.phar start
+```
+git clone https://github.com/moneypit/moneypit-antminer-controller`
+cd moneypit-antminer-controller
 
-Run this command in the application directory to run the test suite
+```
 
-	php composer.phar test
+- Install dependencies
 
-That's it! Now go build something cool.
+```
+wget https://raw.githubusercontent.com/composer/getcomposer.org/1b137f8bf6db3e79a38a5bc45324414a6b1f9df2/web/installer -O - -q | php -- --quiet
+php composer.phar install
+
+```
+
+- Configure to start API on reboot using `/etc/rc.local`
+
+```
+
+	#!/bin/sh -e
+	#
+	# rc.local
+	#
+	# This script is executed at the end of each multiuser runlevel.
+	# Make sure that the script will "exit 0" on success or any other
+	# value on error.
+	#
+	# In order to enable or disable this script just change the execution
+	# bits.
+	#
+	# By default this script does nothing.
+
+	# Print the IP address
+	_IP=$(hostname -I) || true
+	if [ "$_IP" ]; then
+	  printf "My IP address is %s\n" "$_IP"
+	fi
+
+  # Start pigpiod
+  /usr/bin/php composer.phar start &
+
+	exit 0
+
+```

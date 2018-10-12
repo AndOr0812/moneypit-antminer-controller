@@ -61,3 +61,7 @@ php composer.phar install
 	exit 0
 
 ```
+
+## APIs
+
+- Following start of server, goto `http://[hostname]:3000/` for swagger doc

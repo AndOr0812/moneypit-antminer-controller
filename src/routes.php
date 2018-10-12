@@ -166,7 +166,7 @@ $app->put('/antminer/config', function (Request $request, Response $response, ar
     $r = $request->getQueryParams();
     $b = $request->getParsedBody();
 
-    $this->logger->info(json_encode(array('timestamp' => date('c'), 'event' => 'UPDATE_ANTMINER_CONFIG', 'ip' => $r['ip'], 'pw' => $r['pw'], 'type' => $r['type'], 'config'=>$b)));
+    $this->logger->info(json_encode(array('timestamp' => date('c'), 'event' => 'UPDATE_ANTMINER_CONFIG', 'ip' => $r['ip'], 'pw' => $r['pw'], 'type' => $r['type'], $b)));
 
     $antminer = new Antminer($r['ip'],$r['pw'], strtoupper($r['type']));
 
@@ -176,7 +176,7 @@ $app->put('/antminer/config', function (Request $request, Response $response, ar
 
     } else {
 
-      $antminer->updateAntminerConfig(json_encode($b));
+      $antminer->updateAntminerConfig($b);
       return $response->withStatus(200)->withJson(array('status'=> 200, 'message' => 'Antminer config updated (you must initiate a reboot for changes to take affect)'));
 
     }
@@ -196,7 +196,7 @@ $app->get('/antminer/network', function (Request $request, Response $response, a
     if ($antminer->getState() !== 'OFFLINE') {
 
       $network = $antminer->getNetwork();
-      return $response->withStatus(200)->withJson(array('network.conf' => $network));
+      return $response->withStatus(200)->withJson($network);
 
     } else {
 
@@ -213,7 +213,7 @@ $app->put('/antminer/network', function (Request $request, Response $response, a
     $r = $request->getQueryParams();
     $b = $request->getParsedBody();
 
-    $this->logger->info(json_encode(array('timestamp' => date('c'), 'event' => 'UPDATE_ANTMINER_NETWORK', 'ip' => $r['ip'], 'pw' => $r['pw'], 'type' => $r['type'], 'network'=>$b['network.conf'])));
+    $this->logger->info(json_encode(array('timestamp' => date('c'), 'event' => 'UPDATE_ANTMINER_NETWORK', 'ip' => $r['ip'], 'pw' => $r['pw'], 'type' => $r['type'], $b)));
 
     $antminer = new Antminer($r['ip'],$r['pw'], strtoupper($r['type']));
 
@@ -223,7 +223,7 @@ $app->put('/antminer/network', function (Request $request, Response $response, a
 
     } else {
 
-      $antminer->updateAntminerNetwork(json_encode($b['network.conf']));
+      $antminer->updateAntminerNetwork($b);
       return $response->withStatus(200)->withJson(array('status'=> 200, 'message' => 'Antminer network updated (you must initiate a reboot for changes to take affect)'));
 
     }

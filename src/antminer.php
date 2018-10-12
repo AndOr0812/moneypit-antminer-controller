@@ -258,33 +258,72 @@ class Antminer {
 
     $command = "more /config/bmminer.conf";
     $miner_config = json_decode(self::sshExec($ip, $pw, $command), TRUE);
+    self::$config = $miner_config;
 
     $command = "more /config/network.conf";
-    $network_config = self::sshExec($ip, $pw, $command);
+    $network_string = self::sshExec($ip, $pw, $command);
 
-    self::$config = $miner_config;
+    $network_string_lines = explode(PHP_EOL, $network_string);
+
+    $network_config = [];
+    foreach ($network_string_lines as $k=>$v) {
+      $keyval = explode("=",$v);
+
+      switch ($keyval[0]) {
+         case 'hostname':
+             $network_config['hostname'] = $keyval[1];
+             break;
+
+         case 'ipaddress':
+             $network_config['ipaddress'] = $keyval[1];
+             break;
+
+         case 'netmask':
+             $network_config['netmask'] = $keyval[1];
+             break;
+
+         case 'gateway':
+             $network_config['gateway'] = $keyval[1];
+             break;
+
+         case 'dnsservers':
+             $network_config['dnsservers'] = str_replace('"','',$keyval[1]);
+             break;
+       }
+
+    }
     self::$network = $network_config;
+
   }
 
   // used to update config for Antminers that use Bmminer (S9, etc)
-  private function updateConfigBmminer($config_json_string) {
+  private function updateConfigBmminer($config_json) {
 
     $ip = self::$ip;
     $pw = self::$pw;
     $type = self::$type;
 
+    $config_json_string = json_encode($config_json);
     $command = 'echo "'.str_replace('"','\"',$config_json_string).'" > /config/bmminer.conf';
     self::sshExec($ip, $pw, $command);
 
   }
+
   // used to update config for Antminers that use Bmminer (S9, etc)
-  private function updateNetworkBmminer($network_string) {
+  private function updateNetworkBmminer($network_json) {
 
     $ip = self::$ip;
     $pw = self::$pw;
     $type = self::$type;
 
-    $command = 'echo "'.str_replace('"','\"',$network_string).'" > /config/network.conf';
+    $network_conf = "";
+    $network_conf  = "hostname=".$network_json['hostname']."\n";
+    $network_conf .= "ipaddress=".$network_json['ipaddress']."\n";
+    $network_conf .= "netmask=".$network_json['netmask']."\n";
+    $network_conf .= "gateway=".$network_json['gateway']."\n";
+    $network_conf .= "dnsservers=\"".$network_json['dnsservers']."\"\n";
+
+    $command = 'echo "'.str_replace('"','\"',$network_conf).'" > /config/network.conf';
     self::sshExec($ip, $pw, $command);
 
   }
@@ -359,20 +398,52 @@ class Antminer {
 
      $command = "more /config/cgminer.conf";
      $miner_config = json_decode(self::sshExec($ip, $pw, $command), TRUE);
+     self::$config = $miner_config;
 
      $command = "more /config/network.conf";
-     $network_config = self::sshExec($ip, $pw, $command);
+     $network_string = self::sshExec($ip, $pw, $command);
 
-     self::$config = $miner_config;
+     $network_string_lines = explode(PHP_EOL, $network_string);
+
+     $network_config = [];
+     foreach ($network_string_lines as $k=>$v) {
+       $keyval = explode("=",$v);
+
+       switch ($keyval[0]) {
+          case 'hostname':
+              $network_config['hostname'] = $keyval[1];
+              break;
+
+          case 'ipaddress':
+              $network_config['ipaddress'] = $keyval[1];
+              break;
+
+          case 'netmask':
+              $network_config['netmask'] = $keyval[1];
+              break;
+
+          case 'gateway':
+              $network_config['gateway'] = $keyval[1];
+              break;
+
+          case 'dnsservers':
+              $network_config['dnsservers'] = str_replace('"','',$keyval[1]);
+              break;
+        }
+
+     }
      self::$network = $network_config;
+
    }
 
    // used to update config for Antminers that use Cgminer (L3, D3, A3, etc)
-   private function updateConfigCgminer($config_json_string) {
+   private function updateConfigCgminer($config_json) {
 
      $ip = self::$ip;
      $pw = self::$pw;
      $type = self::$type;
+
+     $config_json_string = json_encode($config_json);
 
      $command = 'echo "'.str_replace('"','\"',$config_json_string).'" > /config/cgminer.conf';
      self::sshExec($ip, $pw, $command);
@@ -380,13 +451,20 @@ class Antminer {
    }
 
    // used to update config for Antminers that use Cgminer (L3, D3, A3, etc)
-   private function updateNetworkCgminer($network_string) {
+   private function updateNetworkCgminer($network_json) {
 
      $ip = self::$ip;
      $pw = self::$pw;
      $type = self::$type;
 
-     $command = 'echo "'.str_replace('"','\"',$network_string).'" > /config/network.conf';
+     $network_conf = "";
+     $network_conf  = "hostname=".$network_json['hostname']."\n";
+     $network_conf .= "ipaddress=".$network_json['ipaddress']."\n";
+     $network_conf .= "netmask=".$network_json['netmask']."\n";
+     $network_conf .= "gateway=".$network_json['gateway']."\n";
+     $network_conf .= "dnsservers=\"".$network_json['dnsservers']."\"\n";
+
+     $command = 'echo "'.str_replace('"','\"',$network_conf).'" > /config/network.conf';
      self::sshExec($ip, $pw, $command);
 
    }

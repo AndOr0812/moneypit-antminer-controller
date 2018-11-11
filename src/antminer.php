@@ -755,8 +755,53 @@ class Antminer {
       case 'Antminer S9' :
         self::$stats = [];
 
-        self::$stats['fan_rpm_1'] = (float)$stats['STATS0']['fan3'];
-        self::$stats['ran_rpm_2'] = (float)$stats['STATS0']['fan6'];
+        if (isset($stats['STATS0']['fan1'])) {
+          self::$stats['fan_rpm_1'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_1'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan2'])) {
+          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_2'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan3'])) {
+          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_3'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan4'])) {
+          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_4'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan5'])) {
+          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_5'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan6'])) {
+          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_6'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan7'])) {
+          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_7'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan8'])) {
+          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_8'] = 0;
+        }
 
         self::$stats['asic_hashboard_1_count'] = (float)$stats['STATS0']['chain_acn6'];
         self::$stats['asic_hashboard_2_count'] = (float)$stats['STATS0']['chain_acn7'];
@@ -807,8 +852,53 @@ class Antminer {
       case 'Antminer S9i' :
         self::$stats = [];
 
-        self::$stats['fan_rpm_1'] = (float)$stats['STATS0']['fan3'];
-        self::$stats['ran_rpm_2'] = (float)$stats['STATS0']['fan6'];
+        if (isset($stats['STATS0']['fan1'])) {
+          self::$stats['fan_rpm_1'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_1'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan2'])) {
+          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_2'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan3'])) {
+          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_3'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan4'])) {
+          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_4'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan5'])) {
+          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_5'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan6'])) {
+          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_6'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan7'])) {
+          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_7'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan8'])) {
+          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_8'] = 0;
+        }
 
         self::$stats['asic_hashboard_1_count'] = (float)$stats['STATS0']['chain_acn6'];
         self::$stats['asic_hashboard_2_count'] = (float)$stats['STATS0']['chain_acn7'];
@@ -858,8 +948,53 @@ class Antminer {
       case 'Antminer L3+':
         self::$stats = [];
 
-        self::$stats['fan_rpm_1'] = (float)$stats['STATS0']['fan1'];
-        self::$stats['ran_rpm_2'] = (float)$stats['STATS0']['fan2'];
+        if (isset($stats['STATS0']['fan1'])) {
+          self::$stats['fan_rpm_1'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_1'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan2'])) {
+          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_2'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan3'])) {
+          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_3'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan4'])) {
+          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_4'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan5'])) {
+          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_5'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan6'])) {
+          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_6'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan7'])) {
+          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_7'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan8'])) {
+          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_8'] = 0;
+        }
 
         $asic_chip_total = 288;
         self::$stats['asic_hashboard_1_count'] = (float)$stats['STATS0']['chain_acn1'];
@@ -919,8 +1054,53 @@ class Antminer {
       case 'Antminer A3':
         self::$stats = [];
 
-        self::$stats['fan_rpm_1'] = (float)$stats['STATS0']['fan1'];
-        self::$stats['ran_rpm_2'] = (float)$stats['STATS0']['fan2'];
+        if (isset($stats['STATS0']['fan1'])) {
+          self::$stats['fan_rpm_1'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_1'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan2'])) {
+          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_2'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan3'])) {
+          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_3'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan4'])) {
+          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_4'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan5'])) {
+          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_5'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan6'])) {
+          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_6'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan7'])) {
+          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_7'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan8'])) {
+          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_8'] = 0;
+        }
 
         $asic_chip_total = 180;
         self::$stats['asic_hashboard_1_count'] = (float)$stats['STATS0']['chain_acn1'];
@@ -971,8 +1151,53 @@ class Antminer {
       case 'Antminer D3':
         self::$stats = [];
 
-        self::$stats['fan_rpm_1'] = (float)$stats['STATS0']['fan1'];
-        self::$stats['ran_rpm_2'] = (float)$stats['STATS0']['fan2'];
+        if (isset($stats['STATS0']['fan1'])) {
+          self::$stats['fan_rpm_1'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_1'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan2'])) {
+          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_2'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan3'])) {
+          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_3'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan4'])) {
+          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_4'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan5'])) {
+          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_5'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan6'])) {
+          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_6'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan7'])) {
+          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_7'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan8'])) {
+          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_8'] = 0;
+        }
 
         $asic_chip_total = 180;
         self::$stats['asic_hashboard_1_count'] = (float)$stats['STATS0']['chain_acn1'];

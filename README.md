@@ -13,13 +13,14 @@ Provides a set of REST APIs to monitor / maintain / deploy Antminers in moneypit
 
 - PHP
   `sudo apt-get install php7.0`
+  `sudo apt install php-xml`
 
 ## install
 
 - Clone repo
 
 ```
-git clone https://github.com/moneypit/moneypit-antminer-controller`
+git clone https://github.com/moneypit/moneypit-antminer-controller
 cd moneypit-antminer-controller
 
 ```
@@ -55,8 +56,8 @@ php composer.phar install
 	  printf "My IP address is %s\n" "$_IP"
 	fi
 
-  # Start pigpiod
-  /usr/bin/php composer.phar start &
+  # Start api
+  php -S 0.0.0.0:3000 /home/pi/moneypit-antminer-controller/public/index.php
 
 	exit 0
 

@@ -1258,7 +1258,7 @@ class Antminer {
 
   // Helper function used to interrogate miner via SSH (used my various functions in this class)
   private function sshExec($ip, $pw, $command) {
-    $shell_exec = "sshpass -p '".$pw."' ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@".$ip." '".$command."'";
+    $shell_exec = "sshpass -p '".$pw."' ssh -o StrictHostKeyChecking=no -o ConnectTimeout=120 root@".$ip." '".$command."'";
     return shell_exec($shell_exec);
   }
 

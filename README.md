@@ -9,11 +9,11 @@ Provides a set of REST APIs to monitor / maintain / deploy Antminers in moneypit
 > Recommend running `sudo apt-get update` on Raspberry Pi prior to install
 
 - Git
-   `sudo apt-get install git`
+   `sudo apt-get install git -y`
 
 - PHP
-  `sudo apt-get install php7.0`
-  `sudo apt install php-xml`
+  `sudo apt-get install php7.0 -y`
+  `sudo apt install php-xml -y`
 
 ## install
 

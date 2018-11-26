@@ -1,0 +1,28 @@
+{
+    "name": "moneypit/moneypit-antminer-controller",
+    "description": "Provides REST APIs to monitor / maintain / deploy Antminers in moneypit crypto mine locations.",
+    "homepage": "http://github.com/slimphp/Slim-Skeleton",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.5.0",
+        "slim/slim": "^3.1",
+        "slim/php-view": "^2.0",
+        "monolog/monolog": "^1.23"
+    },
+    "require-dev": {
+        "phpunit/phpunit": ">=4.8 < 6.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "process-timeout" : 0
+    },
+    "scripts": {
+        "start": "php -S localhost:3000 -t public",
+        "test": "phpunit"
+    }
+
+}

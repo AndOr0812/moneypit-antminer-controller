@@ -58,7 +58,7 @@ php composer.phar install
 	if [ "$_IP" ]; then
 	  printf "My IP address is %s\n" "$_IP"
 	fi
-  
+
   # Start moneypit-antminer-controller api
   cd /home/pi/moneypit-antminer-controller; sudo php -S 0.0.0.0:8080 -t public ./index.php
 
@@ -68,4 +68,4 @@ php composer.phar install
 
 ## APIs
 
-- Following start of server, goto `http://[hostname]:3000/` for swagger doc
+- Following start of server, goto `http://[hostname]:8080/` for swagger doc

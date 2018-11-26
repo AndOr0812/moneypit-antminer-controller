@@ -1,0 +1,319 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "moneypit-antminer-controller",
+    "version": ".1",
+    "title": "moneypit-antminer-controller"
+  },
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/antminer": {
+      "get": {
+        "tags": [
+          "antminer"
+        ],
+        "summary": "Fetch antminer state and operating stats",
+        "operationId": "getAntminer",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "ip",
+            "type": "string",
+            "required": true,
+            "description": "ip address of antminer"
+          },
+          {
+            "in": "query",
+            "name": "pw",
+            "type": "string",
+            "required": true,
+            "description": "root pw of antminer (to allow ssh access)"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "type": "string",
+            "required": true,
+            "description": "type of antminer (supports S9, S9i, A3, D3, L3)"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/antminer/state": {
+      "get": {
+        "tags": [
+          "antminer"
+        ],
+        "summary": "Fetch antminer state",
+        "operationId": "getAntminerState",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "ip",
+            "type": "string",
+            "required": true,
+            "description": "ip address of antminer"
+          },
+          {
+            "in": "query",
+            "name": "pw",
+            "type": "string",
+            "required": true,
+            "description": "root pw of antminer (to allow ssh access)"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "type": "string",
+            "required": true,
+            "description": "type of antminer (supports S9, S9i, A3, D3, L3)"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "antminer"
+        ],
+        "summary": "Change antminer state",
+        "operationId": "putAntminerState",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "ip",
+            "type": "string",
+            "required": true,
+            "description": "ip address of antminer"
+          },
+          {
+            "in": "query",
+            "name": "pw",
+            "type": "string",
+            "required": true,
+            "description": "root pw of antminer (to allow ssh access)"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "type": "string",
+            "required": true,
+            "description": "type of antminer (supports S9, S9i, A3, D3, L3)"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "object",
+              "required": [
+                "state"
+              ],
+              "properties": {
+                "state": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "value to change state to (ONLINE, IDLE, OFFLINE -or- REBOOT)"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/antminer/config": {
+      "get": {
+        "tags": [
+          "antminer"
+        ],
+        "summary": "Fetch antminer config",
+        "operationId": "getAntminerConfig",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "ip",
+            "type": "string",
+            "required": true,
+            "description": "ip address of antminer"
+          },
+          {
+            "in": "query",
+            "name": "pw",
+            "type": "string",
+            "required": true,
+            "description": "root pw of antminer (to allow ssh access)"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "type": "string",
+            "required": true,
+            "description": "type of antminer (supports S9, S9i, A3, D3, L3)"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "antminer"
+        ],
+        "summary": "Change antminer config",
+        "operationId": "putAntminerConfig",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "ip",
+            "type": "string",
+            "required": true,
+            "description": "ip address of antminer"
+          },
+          {
+            "in": "query",
+            "name": "pw",
+            "type": "string",
+            "required": true,
+            "description": "root pw of antminer (to allow ssh access)"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "type": "string",
+            "required": true,
+            "description": "type of antminer (supports S9, S9i, A3, D3, L3)"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "object"
+            },
+            "description": "see response from GET for body structure"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/antminer/network": {
+      "get": {
+        "tags": [
+          "antminer"
+        ],
+        "summary": "Fetch antminer network setting",
+        "operationId": "getAntminerNetwork",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "ip",
+            "type": "string",
+            "required": true,
+            "description": "ip address of antminer"
+          },
+          {
+            "in": "query",
+            "name": "pw",
+            "type": "string",
+            "required": true,
+            "description": "root pw of antminer (to allow ssh access)"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "type": "string",
+            "required": true,
+            "description": "type of antminer (supports S9, S9i, A3, D3, L3)"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "antminer"
+        ],
+        "summary": "Change antminer network setting",
+        "operationId": "putAntminerNetwork",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "ip",
+            "type": "string",
+            "required": true,
+            "description": "ip address of antminer"
+          },
+          {
+            "in": "query",
+            "name": "pw",
+            "type": "string",
+            "required": true,
+            "description": "root pw of antminer (to allow ssh access)"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "type": "string",
+            "required": true,
+            "description": "type of antminer (supports S9, S9i, A3, D3, L3)"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "object"
+            },
+            "description": "see response from GET for body structure"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    }
+  }
+}

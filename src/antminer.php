@@ -1051,6 +1051,112 @@ class Antminer {
 
       break;
 
+      case 'Antminer L3++':
+        self::$stats = [];
+
+        if (isset($stats['STATS0']['fan1'])) {
+          self::$stats['fan_rpm_1'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_1'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan2'])) {
+          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_2'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan3'])) {
+          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_3'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan4'])) {
+          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_4'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan5'])) {
+          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_5'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan6'])) {
+          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_6'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan7'])) {
+          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_7'] = 0;
+        }
+
+        if (isset($stats['STATS0']['fan8'])) {
+          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan1'];
+        } else {
+          self::$stats['fan_rpm_8'] = 0;
+        }
+
+        $asic_chip_total = 288;
+        self::$stats['asic_hashboard_1_count'] = (float)$stats['STATS0']['chain_acn1'];
+        self::$stats['asic_hashboard_2_count'] = (float)$stats['STATS0']['chain_acn2'];
+        self::$stats['asic_hashboard_3_count'] = (float)$stats['STATS0']['chain_acn3'];
+        self::$stats['asic_hashboard_4_count'] = (float)$stats['STATS0']['chain_acn4'];
+
+        self::$stats['asic_hashboard_total_count'] = self::$stats['asic_hashboard_1_count'] +
+                                                                self::$stats['asic_hashboard_2_count'] +
+                                                                self::$stats['asic_hashboard_3_count'] +
+                                                                self::$stats['asic_hashboard_4_count'];
+
+        self::$stats['asic_hashboard_1_temp'] = (float)$stats['STATS0']['temp2_1'];
+        self::$stats['asic_hashboard_2_temp'] = (float)$stats['STATS0']['temp2_2'];
+        self::$stats['asic_hashboard_3_temp'] = (float)$stats['STATS0']['temp2_3'];
+        self::$stats['asic_hashboard_4_temp'] = (float)$stats['STATS0']['temp2_4'];
+
+        self::$stats['asic_hashboard_avg_temp'] = (self::$stats['asic_hashboard_1_temp'] +
+                                                              self::$stats['asic_hashboard_2_temp'] +
+                                                              self::$stats['asic_hashboard_3_temp'] +
+                                                              self::$stats['asic_hashboard_4_temp'])/4;
+
+        self::$stats['asic_hashboard_1_rate'] = (float)$stats['STATS0']['chain_rate1'];
+        self::$stats['asic_hashboard_2_rate'] = (float)$stats['STATS0']['chain_rate2'];
+        self::$stats['asic_hashboard_3_rate'] = (float)$stats['STATS0']['chain_rate3'];
+        self::$stats['asic_hashboard_4_rate'] = (float)$stats['STATS0']['chain_rate4'];
+        self::$stats['asic_hashboard_rate_total'] = self::$stats['asic_hashboard_1_rate'] +
+                                                               self::$stats['asic_hashboard_2_rate'] +
+                                                               self::$stats['asic_hashboard_3_rate'] +
+                                                               self::$stats['asic_hashboard_4_rate'];
+
+        self::$stats['asic_hashboard_1_chip_status'] = analyzeHashboardChips(72,$stats['STATS0']['chain_acs1']);
+        self::$stats['asic_hashboard_2_chip_status'] = analyzeHashboardChips(72,$stats['STATS0']['chain_acs2']);
+        self::$stats['asic_hashboard_3_chip_status'] = analyzeHashboardChips(72,$stats['STATS0']['chain_acs3']);
+        self::$stats['asic_hashboard_4_chip_status'] = analyzeHashboardChips(72,$stats['STATS0']['chain_acs4']);
+
+        self::$stats['asic_hashboard_total_chip_status_ok'] =
+          self::$stats['asic_hashboard_1_chip_status']['ok'] +
+          self::$stats['asic_hashboard_2_chip_status']['ok'] +
+          self::$stats['asic_hashboard_3_chip_status']['ok'] +
+          self::$stats['asic_hashboard_4_chip_status']['ok'];
+
+        self::$stats['asic_hashboard_total_chip_status_error'] =
+          self::$stats['asic_hashboard_1_chip_status']['error'] +
+          self::$stats['asic_hashboard_2_chip_status']['error'] +
+          self::$stats['asic_hashboard_3_chip_status']['error'] +
+          self::$stats['asic_hashboard_4_chip_status']['error'];
+
+        self::$stats['asic_hashboard_total_chip_status_missing'] =
+          self::$stats['asic_hashboard_1_chip_status']['missing'] +
+          self::$stats['asic_hashboard_2_chip_status']['missing'] +
+          self::$stats['asic_hashboard_3_chip_status']['missing'] +
+          self::$stats['asic_hashboard_4_chip_status']['missing'];
+
+      break;
+
       case 'Antminer A3':
         self::$stats = [];
 

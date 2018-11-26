@@ -15,6 +15,9 @@ Provides a set of REST APIs to monitor / maintain / deploy Antminers in moneypit
   `sudo apt-get install php7.0 -y`
   `sudo apt install php-xml -y`
 
+- SSHPASS
+  `apt-get install sshpass`
+
 ## install
 
 - Clone repo
@@ -55,9 +58,9 @@ php composer.phar install
 	if [ "$_IP" ]; then
 	  printf "My IP address is %s\n" "$_IP"
 	fi
-
-  # Start api
-  php -S 0.0.0.0:3000 /home/pi/moneypit-antminer-controller/public/index.php
+  
+  # Start moneypit-antminer-controller api
+  cd /home/pi/moneypit-antminer-controller; sudo php -S 0.0.0.0:8080 -t public ./index.php
 
 	exit 0
 

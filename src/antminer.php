@@ -10,6 +10,8 @@ class Antminer {
 
   public static $config;
   public static $network;
+  public static $uptime;
+  public static $load;
 
   public static $summary;
   public static $pools;
@@ -49,6 +51,14 @@ class Antminer {
 
   function getNetwork() {
     return self::$network;
+  }
+
+  function getUptime() {
+    return self::$uptime;
+  }
+
+  function getLoad() {
+    return self::$load;
   }
 
   // Fetches state of miner
@@ -292,7 +302,24 @@ class Antminer {
        }
 
     }
-    self::$network = $network_config;
+   self::$network = $network_config;
+
+   $command = "more /proc/uptime";
+   $uptime_string = self::sshExec($ip, $pw, $command);
+   $uptime_segments = explode(" ", $uptime_string);
+
+   self::$uptime = (float)$uptime_segments[0];
+
+   $command = "more /proc/loadavg";
+   $load_string = self::sshExec($ip, $pw, $command);
+   $load_segments = explode(" ", $load_string);
+
+   $load = array();
+   $load['avg_1'] = (float)$load_segments[0];
+   $load['avg_5'] = (float)$load_segments[1];
+   $load['avg_15'] = (float)$load_segments[2];
+
+   self::$load = $load;
 
   }
 
@@ -433,6 +460,25 @@ class Antminer {
 
      }
      self::$network = $network_config;
+
+     $command = "more /proc/uptime";
+     $uptime_string = self::sshExec($ip, $pw, $command);
+     $uptime_segments = explode(" ", $uptime_string);
+
+     self::$uptime = (float)$uptime_segments[0];
+
+     $command = "more /proc/loadavg";
+     $load_string = self::sshExec($ip, $pw, $command);
+     $load_segments = explode(" ", $load_string);
+
+     $load = array();
+     $load['avg_1'] = (float)$load_segments[0];
+     $load['avg_5'] = (float)$load_segments[1];
+     $load['avg_15'] = (float)$load_segments[2];
+
+     self::$load = $load;
+
+
 
    }
 
@@ -683,6 +729,7 @@ class Antminer {
 
     // SUMMARY
     $summary = request('summary', self::$ip, $port);
+    unset($summary['SUMMARY']['0']);
 
     foreach ($summary['SUMMARY'] as $k=>$v) {
       $key = strtolower($k);

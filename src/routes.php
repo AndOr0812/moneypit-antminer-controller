@@ -26,6 +26,8 @@ $app->get('/antminer', function (Request $request, Response $response, array $ar
       'ip'          => $antminer->getIp(),
       'type'        => $antminer->getType(),
       'state'       => $antminer->getState(),
+      'uptime'      => $antminer->getUptime(),
+      'load'        => $antminer->getLoad(),
       'network'     => $antminer->getNetwork(),
       'config'      => $antminer->getConfig(),
       'summary'     => $antminer->getSummary(),

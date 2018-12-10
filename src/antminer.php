@@ -304,23 +304,6 @@ class Antminer {
     }
    self::$network = $network_config;
 
-   $command = "more /proc/uptime";
-   $uptime_string = self::sshExec($ip, $pw, $command);
-   $uptime_segments = explode(" ", $uptime_string);
-
-   self::$uptime = (float)$uptime_segments[0];
-
-   $command = "more /proc/loadavg";
-   $load_string = self::sshExec($ip, $pw, $command);
-   $load_segments = explode(" ", $load_string);
-
-   $load = array();
-   $load['avg_1'] = (float)$load_segments[0];
-   $load['avg_5'] = (float)$load_segments[1];
-   $load['avg_15'] = (float)$load_segments[2];
-
-   self::$load = $load;
-
   }
 
   // used to update config for Antminers that use Bmminer (S9, etc)
@@ -461,25 +444,6 @@ class Antminer {
      }
      self::$network = $network_config;
 
-     $command = "more /proc/uptime";
-     $uptime_string = self::sshExec($ip, $pw, $command);
-     $uptime_segments = explode(" ", $uptime_string);
-
-     self::$uptime = (float)$uptime_segments[0];
-
-     $command = "more /proc/loadavg";
-     $load_string = self::sshExec($ip, $pw, $command);
-     $load_segments = explode(" ", $load_string);
-
-     $load = array();
-     $load['avg_1'] = (float)$load_segments[0];
-     $load['avg_5'] = (float)$load_segments[1];
-     $load['avg_15'] = (float)$load_segments[2];
-
-     self::$load = $load;
-
-
-
    }
 
    // used to update config for Antminers that use Cgminer (L3, D3, A3, etc)
@@ -557,6 +521,26 @@ class Antminer {
 
   // Used to fetch info from Antminer
   private function fetchAntminerInfo() {
+    $ip = self::$ip;
+    $pw = self::$pw;
+    $type = self::$type;
+
+    $command = "more /proc/uptime";
+    $uptime_string = self::sshExec($ip, $pw, $command);
+    $uptime_segments = explode(" ", $uptime_string);
+
+    self::$uptime = (float)$uptime_segments[0];
+
+    $command = "more /proc/loadavg";
+    $load_string = self::sshExec($ip, $pw, $command);
+    $load_segments = explode(" ", $load_string);
+
+    $load = array();
+    $load['avg_1'] = (float)$load_segments[0];
+    $load['avg_5'] = (float)$load_segments[1];
+    $load['avg_15'] = (float)$load_segments[2];
+
+    self::$load = $load;
 
     $port = '4028';
 
@@ -564,7 +548,8 @@ class Antminer {
     ini_set('default_socket_timeout', SOCK_TIMEOUT);
     set_time_limit(0);
 
-    function analyzeHashboardChips($chip_count_max, $chip_string) {
+    if (!function_exists('analyzeHashboardChips'))   {
+      function analyzeHashboardChips($chip_count_max, $chip_string) {
 
       $asc = str_replace(' ', '', $chip_string);
       $asc_chip_chars = str_split($asc);
@@ -591,8 +576,10 @@ class Antminer {
         'missing' => $asc_chip_missing
       );
     }
+    }
 
-    function seconds_to_time($input_seconds) {
+    if (!function_exists('seconds_to_time'))   {
+      function seconds_to_time($input_seconds) {
       $seconds_in_minute = 60;
       $seconds_in_hour   = 60 * $seconds_in_minute;
       $seconds_in_day    = 24 * $seconds_in_hour;
@@ -614,8 +601,10 @@ class Antminer {
       );
       return $obj;
     }
+    }
 
-    function getsock($addr, $port) {
+    if (!function_exists('getsock'))   {
+      function getsock($addr, $port) {
     	$socket = null;
     	$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 
@@ -640,8 +629,10 @@ class Antminer {
     	return $socket;
 
     }
+    }
 
-    function readsockline($socket) {
+    if (!function_exists('readsockline'))   {
+      function readsockline($socket) {
     	$line = '';
     	while (true) {
     		$byte = socket_read($socket, 1);
@@ -653,8 +644,10 @@ class Antminer {
     	}
     	return $line;
     }
+    }
 
-    function request($cmd, $ip, $port) {
+    if (!function_exists('request'))   {
+      function request($cmd, $ip, $port) {
 
     	$socket = getsock($ip, $port);
 
@@ -725,7 +718,7 @@ class Antminer {
       }
 
     }
-
+    }
 
     // SUMMARY
     $summary = request('summary', self::$ip, $port);
@@ -754,6 +747,8 @@ class Antminer {
 
     }
 
+    self::$pools['pool_1']['last_share_time'] = (float)self::$pools['pool_1']['last_share_time'];
+
     foreach ($pools['POOL1'] as $k=>$v) {
       $key = strtolower($k);
       $key = str_replace(' ','_',$key);
@@ -765,6 +760,8 @@ class Antminer {
       }
 
     }
+
+    self::$pools['pool_2']['last_share_time'] = (float)self::$pools['pool_2']['last_share_time'];
 
     foreach ($pools['POOL2'] as $k=>$v) {
       $key = strtolower($k);
@@ -778,7 +775,7 @@ class Antminer {
 
     }
 
-
+    self::$pools['pool_3']['last_share_time'] = (float)self::$pools['pool_3']['last_share_time'];
 
     // STATS
     $stats = request('stats', self::$ip, $port);
@@ -809,43 +806,43 @@ class Antminer {
         }
 
         if (isset($stats['STATS0']['fan2'])) {
-          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan2'];
         } else {
           self::$stats['fan_rpm_2'] = 0;
         }
 
         if (isset($stats['STATS0']['fan3'])) {
-          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan3'];
         } else {
           self::$stats['fan_rpm_3'] = 0;
         }
 
         if (isset($stats['STATS0']['fan4'])) {
-          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan4'];
         } else {
           self::$stats['fan_rpm_4'] = 0;
         }
 
         if (isset($stats['STATS0']['fan5'])) {
-          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan5'];
         } else {
           self::$stats['fan_rpm_5'] = 0;
         }
 
         if (isset($stats['STATS0']['fan6'])) {
-          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan6'];
         } else {
           self::$stats['fan_rpm_6'] = 0;
         }
 
         if (isset($stats['STATS0']['fan7'])) {
-          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan7'];
         } else {
           self::$stats['fan_rpm_7'] = 0;
         }
 
         if (isset($stats['STATS0']['fan8'])) {
-          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan8'];
         } else {
           self::$stats['fan_rpm_8'] = 0;
         }
@@ -906,43 +903,43 @@ class Antminer {
         }
 
         if (isset($stats['STATS0']['fan2'])) {
-          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan2'];
         } else {
           self::$stats['fan_rpm_2'] = 0;
         }
 
         if (isset($stats['STATS0']['fan3'])) {
-          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan3'];
         } else {
           self::$stats['fan_rpm_3'] = 0;
         }
 
         if (isset($stats['STATS0']['fan4'])) {
-          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan4'];
         } else {
           self::$stats['fan_rpm_4'] = 0;
         }
 
         if (isset($stats['STATS0']['fan5'])) {
-          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan5'];
         } else {
           self::$stats['fan_rpm_5'] = 0;
         }
 
         if (isset($stats['STATS0']['fan6'])) {
-          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan6'];
         } else {
           self::$stats['fan_rpm_6'] = 0;
         }
 
         if (isset($stats['STATS0']['fan7'])) {
-          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan7'];
         } else {
           self::$stats['fan_rpm_7'] = 0;
         }
 
         if (isset($stats['STATS0']['fan8'])) {
-          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan8'];
         } else {
           self::$stats['fan_rpm_8'] = 0;
         }
@@ -1002,43 +999,43 @@ class Antminer {
         }
 
         if (isset($stats['STATS0']['fan2'])) {
-          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan2'];
         } else {
           self::$stats['fan_rpm_2'] = 0;
         }
 
         if (isset($stats['STATS0']['fan3'])) {
-          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan3'];
         } else {
           self::$stats['fan_rpm_3'] = 0;
         }
 
         if (isset($stats['STATS0']['fan4'])) {
-          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan4'];
         } else {
           self::$stats['fan_rpm_4'] = 0;
         }
 
         if (isset($stats['STATS0']['fan5'])) {
-          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan5'];
         } else {
           self::$stats['fan_rpm_5'] = 0;
         }
 
         if (isset($stats['STATS0']['fan6'])) {
-          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan6'];
         } else {
           self::$stats['fan_rpm_6'] = 0;
         }
 
         if (isset($stats['STATS0']['fan7'])) {
-          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan7'];
         } else {
           self::$stats['fan_rpm_7'] = 0;
         }
 
         if (isset($stats['STATS0']['fan8'])) {
-          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan8'];
         } else {
           self::$stats['fan_rpm_8'] = 0;
         }
@@ -1108,43 +1105,43 @@ class Antminer {
         }
 
         if (isset($stats['STATS0']['fan2'])) {
-          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan2'];
         } else {
           self::$stats['fan_rpm_2'] = 0;
         }
 
         if (isset($stats['STATS0']['fan3'])) {
-          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan3'];
         } else {
           self::$stats['fan_rpm_3'] = 0;
         }
 
         if (isset($stats['STATS0']['fan4'])) {
-          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan4'];
         } else {
           self::$stats['fan_rpm_4'] = 0;
         }
 
         if (isset($stats['STATS0']['fan5'])) {
-          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan5'];
         } else {
           self::$stats['fan_rpm_5'] = 0;
         }
 
         if (isset($stats['STATS0']['fan6'])) {
-          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan6'];
         } else {
           self::$stats['fan_rpm_6'] = 0;
         }
 
         if (isset($stats['STATS0']['fan7'])) {
-          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan7'];
         } else {
           self::$stats['fan_rpm_7'] = 0;
         }
 
         if (isset($stats['STATS0']['fan8'])) {
-          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan8'];
         } else {
           self::$stats['fan_rpm_8'] = 0;
         }
@@ -1214,43 +1211,43 @@ class Antminer {
         }
 
         if (isset($stats['STATS0']['fan2'])) {
-          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan2'];
         } else {
           self::$stats['fan_rpm_2'] = 0;
         }
 
         if (isset($stats['STATS0']['fan3'])) {
-          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan3'];
         } else {
           self::$stats['fan_rpm_3'] = 0;
         }
 
         if (isset($stats['STATS0']['fan4'])) {
-          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan4'];
         } else {
           self::$stats['fan_rpm_4'] = 0;
         }
 
         if (isset($stats['STATS0']['fan5'])) {
-          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan5'];
         } else {
           self::$stats['fan_rpm_5'] = 0;
         }
 
         if (isset($stats['STATS0']['fan6'])) {
-          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan6'];
         } else {
           self::$stats['fan_rpm_6'] = 0;
         }
 
         if (isset($stats['STATS0']['fan7'])) {
-          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan7'];
         } else {
           self::$stats['fan_rpm_7'] = 0;
         }
 
         if (isset($stats['STATS0']['fan8'])) {
-          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan8'];
         } else {
           self::$stats['fan_rpm_8'] = 0;
         }
@@ -1311,43 +1308,43 @@ class Antminer {
         }
 
         if (isset($stats['STATS0']['fan2'])) {
-          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_2'] = (float)$stats['STATS0']['fan2'];
         } else {
           self::$stats['fan_rpm_2'] = 0;
         }
 
         if (isset($stats['STATS0']['fan3'])) {
-          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_3'] = (float)$stats['STATS0']['fan3'];
         } else {
           self::$stats['fan_rpm_3'] = 0;
         }
 
         if (isset($stats['STATS0']['fan4'])) {
-          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_4'] = (float)$stats['STATS0']['fan4'];
         } else {
           self::$stats['fan_rpm_4'] = 0;
         }
 
         if (isset($stats['STATS0']['fan5'])) {
-          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_5'] = (float)$stats['STATS0']['fan5'];
         } else {
           self::$stats['fan_rpm_5'] = 0;
         }
 
         if (isset($stats['STATS0']['fan6'])) {
-          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_6'] = (float)$stats['STATS0']['fan6'];
         } else {
           self::$stats['fan_rpm_6'] = 0;
         }
 
         if (isset($stats['STATS0']['fan7'])) {
-          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_7'] = (float)$stats['STATS0']['fan7'];
         } else {
           self::$stats['fan_rpm_7'] = 0;
         }
 
         if (isset($stats['STATS0']['fan8'])) {
-          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan1'];
+          self::$stats['fan_rpm_8'] = (float)$stats['STATS0']['fan8'];
         } else {
           self::$stats['fan_rpm_8'] = 0;
         }
@@ -1402,9 +1399,6 @@ class Antminer {
 
        break;
     }
-
-
-     //self::$stats
 
     return;
   }
@@ -1463,6 +1457,7 @@ class Antminer {
       self::fetchAntminerConfig();
       self::fetchAntminerInfo();
     }
+
 
   }
 
